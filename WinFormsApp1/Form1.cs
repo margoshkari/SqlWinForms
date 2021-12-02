@@ -60,24 +60,28 @@ namespace WinFormsApp1
             {
                 dbName = (sender as TreeView).SelectedNode.Text;
             }
-            foreach (var item in Select(dbName, tableName))
+            if (isDatabaseExists(dbName, $@"Data Source={this.serverTB.Text};Initial Catalog=master;UID={this.userTB.Text};Password={this.passwordTB.Text}"))
             {
-                (sender as TreeView).SelectedNode.Nodes.Add(item);
+                foreach (var item in Select(dbName, tableName))
+                {
+                    (sender as TreeView).SelectedNode.Nodes.Add(item);
+                }
             }
         }
         private List<string> Select(string dbname, string tableName)
         {
             List<string> list = new List<string>();
             string commandstring = string.Empty;
+            string connectionstring = $@"Data Source={this.serverTB.Text};Initial Catalog={dbname};UID={this.userTB.Text};Password={this.passwordTB.Text}";
             try
             {
-                using (SqlConnection connection = new SqlConnection($@"Data Source={this.serverTB.Text};Initial Catalog={dbname};UID={this.userTB.Text};Password={this.passwordTB.Text}"))
+                using (SqlConnection connection = new SqlConnection(connectionstring))
                 {
                     connection.Open();
                     if (tableName != string.Empty)
-                        commandstring = Command(tableName, connection);
+                        commandstring = Command(tableName, connectionstring);
                     else
-                        commandstring = Command(dbname, connection);
+                        commandstring = Command(dbname, connectionstring);
 
                     if (commandstring != string.Empty)
                     {
@@ -99,8 +103,21 @@ namespace WinFormsApp1
             catch (Exception ex) { }
             return list;
         }
-        private string Command(string name, SqlConnection connection)
+        private string Command(string name, string str)
         {
+            if (isDatabaseExists(name, str))
+            {
+                return $@"SELECT name FROM [{name}].sys.tables;";
+            }
+            else
+            {
+                return $@"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{name}';";
+            }
+        }
+        private bool isDatabaseExists(string name, string str)
+        {
+            SqlConnection connection = new SqlConnection(str);
+            connection.Open();
             using (SqlCommand command = new SqlCommand($@"if Exists(select 1 from master.dbo.sysdatabases where name='{name}') 
                        select 1 else select 0", connection))
             {
@@ -108,11 +125,13 @@ namespace WinFormsApp1
 
                 if (exists > 0)
                 {
-                    return $@"SELECT name FROM [{name}].sys.tables;";
+                    connection.Close();
+                    return true;
                 }
                 else
                 {
-                    return $@"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{name}';";
+                    connection.Close();
+                    return false;
                 }
             }
         }
