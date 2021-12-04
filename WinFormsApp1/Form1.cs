@@ -162,7 +162,13 @@ namespace WinFormsApp1
 
         private void editBtn_Click(object sender, EventArgs e)
         {
-
+            if (isDatabaseExists(dbName))
+            {
+                this.Hide();
+                EditForm editForm = new EditForm(tableName, sqlConnection);
+                editForm.ShowDialog();
+                this.Show();
+            }
         }
     }
 }
