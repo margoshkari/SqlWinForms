@@ -39,6 +39,8 @@ namespace WinFormsApp1
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.dataTB = new System.Windows.Forms.TextBox();
+            this.showBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // serverTB
@@ -127,16 +129,37 @@ namespace WinFormsApp1
             this.label4.TabIndex = 4;
             this.label4.Text = "Username";
             // 
+            // dataTB
+            // 
+            this.dataTB.Location = new System.Drawing.Point(170, 136);
+            this.dataTB.Multiline = true;
+            this.dataTB.Name = "dataTB";
+            this.dataTB.ReadOnly = true;
+            this.dataTB.Size = new System.Drawing.Size(152, 302);
+            this.dataTB.TabIndex = 5;
+            // 
+            // showBtn
+            // 
+            this.showBtn.Location = new System.Drawing.Point(243, 107);
+            this.showBtn.Name = "showBtn";
+            this.showBtn.Size = new System.Drawing.Size(75, 23);
+            this.showBtn.TabIndex = 1;
+            this.showBtn.Text = "Show data";
+            this.showBtn.UseVisualStyleBackColor = true;
+            this.showBtn.Click += new System.EventHandler(this.showBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(341, 450);
+            this.Controls.Add(this.dataTB);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.showBtn);
             this.Controls.Add(this.nextBtn);
             this.Controls.Add(this.userTB);
             this.Controls.Add(this.passwordTB);
@@ -161,6 +184,8 @@ namespace WinFormsApp1
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox dataTB;
+        private System.Windows.Forms.Button showBtn;
     }
 }
 

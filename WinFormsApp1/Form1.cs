@@ -13,6 +13,8 @@ namespace WinFormsApp1
 {
     public partial class Form1 : Form
     {
+        private string dbName = string.Empty;
+        private string tableName = string.Empty;
         public Form1()
         {
             InitializeComponent();
@@ -22,6 +24,7 @@ namespace WinFormsApp1
         {
             try
             {
+                this.treeView1.Nodes.Clear();
                 using (SqlConnection connection = new SqlConnection($@"Data Source={this.serverTB.Text};Initial Catalog={this.loginTB.Text};UID={this.userTB.Text};Password={this.passwordTB.Text}"))
                 {
                     connection.Open();
@@ -47,9 +50,6 @@ namespace WinFormsApp1
         }
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            string dbName = string.Empty;
-            string tableName = string.Empty;
-
             if ((sender as TreeView).SelectedNode.Parent != null &&
      (sender as TreeView).SelectedNode.GetType() == typeof(TreeNode))
             {
@@ -60,7 +60,7 @@ namespace WinFormsApp1
             {
                 dbName = (sender as TreeView).SelectedNode.Text;
             }
-            if (isDatabaseExists(dbName, $@"Data Source={this.serverTB.Text};Initial Catalog=master;UID={this.userTB.Text};Password={this.passwordTB.Text}"))
+            if (isDatabaseExists(dbName, $@"Data Source={this.serverTB.Text};Initial Catalog={dbName};UID={this.userTB.Text};Password={this.passwordTB.Text}"))
             {
                 foreach (var item in Select(dbName, tableName))
                 {
@@ -134,6 +134,37 @@ namespace WinFormsApp1
                     return false;
                 }
             }
+        }
+
+        private void showBtn_Click(object sender, EventArgs e)
+        {
+            this.dataTB.Text = string.Empty;
+            string connectionstring = $@"Data Source={this.serverTB.Text};Initial Catalog={dbName};UID={this.userTB.Text};Password={this.passwordTB.Text}";
+            SqlConnection connection = new SqlConnection(connectionstring);
+            int counter = 0;
+            connection.Open();
+            if (tableName != string.Empty)
+            {
+                if (isDatabaseExists(dbName, connectionstring))
+                {
+                    using (SqlCommand command = new SqlCommand($@"SELECT * FROM [{tableName}]", connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            counter = reader.FieldCount;
+                            while (reader.Read())
+                            {
+                                for (int i = 0; i < reader.FieldCount; i++)
+                                {
+                                    this.dataTB.Text += $"{reader.GetValue(i)} ";
+                                }
+                                this.dataTB.Text += "\r\n";
+                            }
+                        }
+                    }
+                }
+            }
+            connection.Close();
         }
     }
 }
