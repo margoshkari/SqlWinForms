@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WinFormsApp1
@@ -15,41 +10,48 @@ namespace WinFormsApp1
     {
         private string dbName = string.Empty;
         private string tableName = string.Empty;
+        SqlConnection sqlConnection = new SqlConnection();
         public Form1()
         {
             InitializeComponent();
         }
-
+        private void Connection(string connectionstr)
+        {
+            if (sqlConnection.State == ConnectionState.Open)
+            {
+                sqlConnection.Close();
+            }
+            sqlConnection = new SqlConnection(connectionstr);
+            sqlConnection.Open();
+        }
         private void nextBtn_Click(object sender, EventArgs e)
         {
             try
             {
+                Connection($@"Data Source={this.serverTB.Text};Initial Catalog={this.loginTB.Text};UID={this.userTB.Text};Password={this.passwordTB.Text}");
+                MessageBox.Show("Connected!");
                 this.treeView1.Nodes.Clear();
-                using (SqlConnection connection = new SqlConnection($@"Data Source={this.serverTB.Text};Initial Catalog={this.loginTB.Text};UID={this.userTB.Text};Password={this.passwordTB.Text}"))
+                using (SqlCommand command = new SqlCommand(@"SELECT name FROM sys.databases;", sqlConnection))
                 {
-                    connection.Open();
-                    MessageBox.Show("Connected");
-                    using (SqlCommand command = new SqlCommand(@"SELECT name FROM sys.databases;", connection))
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                object name = reader.GetValue(0);
-                                this.treeView1.Nodes.Add(name.ToString());
-                            }
+                            object name = reader.GetValue(0);
+                            this.treeView1.Nodes.Add(name.ToString());
                         }
                     }
-                    connection.Close();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error");
+                MessageBox.Show("Error connection");
             }
         }
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            dbName = string.Empty;
+            tableName = string.Empty;
             if ((sender as TreeView).SelectedNode.Parent != null &&
      (sender as TreeView).SelectedNode.GetType() == typeof(TreeNode))
             {
@@ -60,8 +62,10 @@ namespace WinFormsApp1
             {
                 dbName = (sender as TreeView).SelectedNode.Text;
             }
-            if (isDatabaseExists(dbName, $@"Data Source={this.serverTB.Text};Initial Catalog={dbName};UID={this.userTB.Text};Password={this.passwordTB.Text}"))
+            if (isDatabaseExists(dbName))
             {
+                Connection($@"Data Source={this.serverTB.Text};Initial Catalog={dbName};UID={this.userTB.Text};Password={this.passwordTB.Text}");
+                (sender as TreeView).SelectedNode.Nodes.Clear();
                 foreach (var item in Select(dbName, tableName))
                 {
                     (sender as TreeView).SelectedNode.Nodes.Add(item);
@@ -72,40 +76,34 @@ namespace WinFormsApp1
         {
             List<string> list = new List<string>();
             string commandstring = string.Empty;
-            string connectionstring = $@"Data Source={this.serverTB.Text};Initial Catalog={dbname};UID={this.userTB.Text};Password={this.passwordTB.Text}";
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionstring))
-                {
-                    connection.Open();
-                    if (tableName != string.Empty)
-                        commandstring = Command(tableName, connectionstring);
-                    else
-                        commandstring = Command(dbname, connectionstring);
+                if (tableName != string.Empty)
+                    commandstring = Command(tableName);
+                else
+                    commandstring = Command(dbname);
 
-                    if (commandstring != string.Empty)
+                if (commandstring != string.Empty)
+                {
+                    using (SqlCommand command = new SqlCommand(commandstring, sqlConnection))
                     {
-                        using (SqlCommand command = new SqlCommand(commandstring, connection))
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            using (SqlDataReader reader = command.ExecuteReader())
+                            while (reader.Read())
                             {
-                                while (reader.Read())
-                                {
-                                    object names = reader.GetValue(0);
-                                    list.Add(names.ToString());
-                                }
+                                object names = reader.GetValue(0);
+                                list.Add(names.ToString());
                             }
                         }
                     }
-                    connection.Close();
                 }
             }
             catch (Exception ex) { }
             return list;
         }
-        private string Command(string name, string str)
+        private string Command(string name)
         {
-            if (isDatabaseExists(name, str))
+            if (isDatabaseExists(name))
             {
                 return $@"SELECT name FROM [{name}].sys.tables;";
             }
@@ -114,40 +112,32 @@ namespace WinFormsApp1
                 return $@"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{name}';";
             }
         }
-        private bool isDatabaseExists(string name, string str)
+        private bool isDatabaseExists(string name)
         {
-            SqlConnection connection = new SqlConnection(str);
-            connection.Open();
             using (SqlCommand command = new SqlCommand($@"if Exists(select 1 from master.dbo.sysdatabases where name='{name}') 
-                       select 1 else select 0", connection))
+                       select 1 else select 0", sqlConnection))
             {
                 int exists = Convert.ToInt32(command.ExecuteScalar());
 
                 if (exists > 0)
                 {
-                    connection.Close();
                     return true;
                 }
                 else
                 {
-                    connection.Close();
                     return false;
                 }
             }
         }
-
         private void showBtn_Click(object sender, EventArgs e)
         {
             this.dataTB.Text = string.Empty;
-            string connectionstring = $@"Data Source={this.serverTB.Text};Initial Catalog={dbName};UID={this.userTB.Text};Password={this.passwordTB.Text}";
-            SqlConnection connection = new SqlConnection(connectionstring);
             int counter = 0;
-            connection.Open();
             if (tableName != string.Empty)
             {
-                if (isDatabaseExists(dbName, connectionstring))
+                if (isDatabaseExists(dbName))
                 {
-                    using (SqlCommand command = new SqlCommand($@"SELECT * FROM [{tableName}]", connection))
+                    using (SqlCommand command = new SqlCommand($@"SELECT * FROM [{tableName}]", sqlConnection))
                     {
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
@@ -164,7 +154,6 @@ namespace WinFormsApp1
                     }
                 }
             }
-            connection.Close();
         }
     }
 }
