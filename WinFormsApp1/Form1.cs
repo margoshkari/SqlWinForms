@@ -131,7 +131,7 @@ namespace WinFormsApp1
         }
         private void showBtn_Click(object sender, EventArgs e)
         {
-            this.dataTB.Text = string.Empty;
+            string data = string.Empty;
             int counter = 0;
             if (tableName != string.Empty)
             {
@@ -146,14 +146,23 @@ namespace WinFormsApp1
                             {
                                 for (int i = 0; i < reader.FieldCount; i++)
                                 {
-                                    this.dataTB.Text += $"{reader.GetValue(i)} ";
+                                    data += $"{reader.GetName(i)}:  {reader.GetValue(i)} \r\n";
                                 }
-                                this.dataTB.Text += "\r\n";
+                                data += "\r\n";
                             }
                         }
                     }
+                    this.Hide();
+                    TableDataForm tableData = new TableDataForm(tableName, data);
+                    tableData.ShowDialog();
+                    this.Show();
                 }
             }
+        }
+
+        private void editBtn_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
