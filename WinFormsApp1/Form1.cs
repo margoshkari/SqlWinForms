@@ -132,7 +132,6 @@ namespace WinFormsApp1
         private void showBtn_Click(object sender, EventArgs e)
         {
             string data = string.Empty;
-            int counter = 0;
             if (tableName != string.Empty)
             {
                 if (isDatabaseExists(dbName))
@@ -141,7 +140,6 @@ namespace WinFormsApp1
                     {
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            counter = reader.FieldCount;
                             while (reader.Read())
                             {
                                 for (int i = 0; i < reader.FieldCount; i++)
@@ -162,13 +160,18 @@ namespace WinFormsApp1
 
         private void editBtn_Click(object sender, EventArgs e)
         {
-            if (isDatabaseExists(dbName))
+            if (tableName != string.Empty)
             {
-                this.Hide();
-                EditForm editForm = new EditForm(tableName, sqlConnection);
-                editForm.ShowDialog();
-                this.Show();
+                if (isDatabaseExists(dbName))
+                {
+                    this.Hide();
+                    EditForm editForm = new EditForm(tableName, sqlConnection);
+                    editForm.ShowDialog();
+                    this.Show();
+                }
             }
+            else
+                MessageBox.Show("Select table!");
         }
     }
 }

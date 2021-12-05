@@ -31,14 +31,13 @@ namespace WinFormsApp1
         {
             this.insertBtn = new System.Windows.Forms.Button();
             this.deleteBtn = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.label = new System.Windows.Forms.Label();
             this.valueTB = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // insertBtn
             // 
-            this.insertBtn.Location = new System.Drawing.Point(12, 12);
+            this.insertBtn.Location = new System.Drawing.Point(68, 24);
             this.insertBtn.Name = "insertBtn";
             this.insertBtn.Size = new System.Drawing.Size(75, 23);
             this.insertBtn.TabIndex = 0;
@@ -48,7 +47,7 @@ namespace WinFormsApp1
             // 
             // deleteBtn
             // 
-            this.deleteBtn.Location = new System.Drawing.Point(93, 12);
+            this.deleteBtn.Location = new System.Drawing.Point(149, 24);
             this.deleteBtn.Name = "deleteBtn";
             this.deleteBtn.Size = new System.Drawing.Size(75, 23);
             this.deleteBtn.TabIndex = 1;
@@ -56,18 +55,10 @@ namespace WinFormsApp1
             this.deleteBtn.UseVisualStyleBackColor = true;
             this.deleteBtn.Click += new System.EventHandler(this.deleteBtn_Click);
             // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(174, 12);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(100, 23);
-            this.textBox1.TabIndex = 2;
-            // 
             // label
             // 
             this.label.AutoSize = true;
-            this.label.Location = new System.Drawing.Point(12, 66);
+            this.label.Location = new System.Drawing.Point(93, 71);
             this.label.Name = "label";
             this.label.Size = new System.Drawing.Size(50, 15);
             this.label.TabIndex = 3;
@@ -75,7 +66,7 @@ namespace WinFormsApp1
             // 
             // valueTB
             // 
-            this.valueTB.Location = new System.Drawing.Point(12, 84);
+            this.valueTB.Location = new System.Drawing.Point(93, 108);
             this.valueTB.Name = "valueTB";
             this.valueTB.Size = new System.Drawing.Size(100, 23);
             this.valueTB.TabIndex = 4;
@@ -88,7 +79,6 @@ namespace WinFormsApp1
             this.ClientSize = new System.Drawing.Size(282, 170);
             this.Controls.Add(this.valueTB);
             this.Controls.Add(this.label);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.deleteBtn);
             this.Controls.Add(this.insertBtn);
             this.Name = "EditForm";
@@ -102,7 +92,6 @@ namespace WinFormsApp1
 
         private System.Windows.Forms.Button insertBtn;
         private System.Windows.Forms.Button deleteBtn;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label;
         private System.Windows.Forms.TextBox valueTB;
     }
