@@ -151,17 +151,21 @@ namespace WinFormsApp1
 
         private void Delete_Click(object sender, EventArgs e)
         {
-            
+            Edit("Delete");
         }
 
         private void Insert_Click(object sender, EventArgs e)
+        {
+            Edit("Insert");
+        }
+        private void Edit(string action)
         {
             if (tableName != string.Empty)
             {
                 if (isDatabaseExists(dbName))
                 {
                     this.Hide();
-                    EditForm editForm = new EditForm("Insert", tableName, sqlConnection);
+                    EditForm editForm = new EditForm(action, tableName, sqlConnection);
                     editForm.ShowDialog();
                     this.Show();
                 }

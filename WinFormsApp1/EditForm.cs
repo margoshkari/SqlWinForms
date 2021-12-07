@@ -30,20 +30,15 @@ namespace WinFormsApp1
             actionName = action;
             this.label.Text = $"Column name: \n{tableName}";
             sqlConnection = connection;
-            this.valueTB.Enabled = false;
+            Start();
         }
         private void valueTB_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-            {
-                if(this.valueTB.Text != string.Empty)
-                    tcs?.TrySetResult(true);
-                else
-                    MessageBox.Show("Enter value!");
-            } 
+                Check();
         }
-
-        private void submitBtn_Click(object sender, EventArgs e)
+        private void submitBtn_Click(object sender, EventArgs e) => Check();
+        private void Start()
         {
             switch (actionName)
             {
@@ -57,9 +52,15 @@ namespace WinFormsApp1
                     break;
             }
         }
+        private void Check()
+        {
+            if (this.valueTB.Text != string.Empty)
+                tcs?.TrySetResult(true);
+            else
+                MessageBox.Show("Enter value!");
+        }
         private async void Insert()
         {
-            this.submitBtn.Enabled = false;
             using (SqlCommand command = new SqlCommand($@"SELECT * FROM [{name}]", sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -91,12 +92,9 @@ namespace WinFormsApp1
             {
                 MessageBox.Show("Error adding value!");
             }
-            this.submitBtn.Enabled = true;
         }
         private async void Delete()
         {
-            this.submitBtn.Enabled = false;
-            this.valueTB.Enabled = true;
             string columnName = string.Empty;
             this.label.Text = "Enter id of element \nyou want to delete:";
 
@@ -117,8 +115,6 @@ namespace WinFormsApp1
                         MessageBox.Show("Not found!");
                 }
                 this.valueTB.Text = string.Empty;
-                this.valueTB.Enabled = false;
-                this.submitBtn.Enabled = true;
             }
         }
     }
