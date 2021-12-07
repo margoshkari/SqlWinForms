@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace WinFormsApp1
@@ -117,21 +118,6 @@ namespace WinFormsApp1
                 }
             }
         }
-        private void editBtn_Click(object sender, EventArgs e)
-        {
-            if (tableName != string.Empty)
-            {
-                if (isDatabaseExists(dbName))
-                {
-                    this.Hide();
-                    EditForm editForm = new EditForm(tableName, sqlConnection);
-                    editForm.ShowDialog();
-                    this.Show();
-                }
-            }
-            else
-                MessageBox.Show("Select table!");
-        }
         private void Form1_Load(object sender, EventArgs e)
         {
             this.treeView1.Nodes.Clear();
@@ -153,12 +139,35 @@ namespace WinFormsApp1
             procItem.DropDownItems.Add("Select");
             procItem.DropDownItems[0].Click += Select_Click;
             procItem.DropDownItems.Add("Insert");
+            procItem.DropDownItems[1].Click += Insert_Click;
             procItem.DropDownItems.Add("Delete");
+            procItem.DropDownItems[2].Click += Delete_Click;
 
 
             this.menuStrip1.Items.Add(procItem);
             this.menuStrip1.Items.Add("Table");
             this.menuStrip1.Items.Add("Query");
+        }
+
+        private void Delete_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void Insert_Click(object sender, EventArgs e)
+        {
+            if (tableName != string.Empty)
+            {
+                if (isDatabaseExists(dbName))
+                {
+                    this.Hide();
+                    EditForm editForm = new EditForm("Insert", tableName, sqlConnection);
+                    editForm.ShowDialog();
+                    this.Show();
+                }
+            }
+            else
+                MessageBox.Show("Select table!");
         }
 
         private void Select_Click(object sender, EventArgs e)

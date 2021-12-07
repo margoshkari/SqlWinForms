@@ -14,30 +14,52 @@ namespace WinFormsApp1
     public partial class EditForm : Form
     {
         TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-        bool isValueAdded = false;
         string value = string.Empty;
         string name = string.Empty;
+        string actionName = string.Empty;
         SqlConnection sqlConnection = new SqlConnection();
         public EditForm()
         {
             InitializeComponent();
         }
 
-        public EditForm(string tableName, SqlConnection connection)
+        public EditForm(string action, string tableName, SqlConnection connection)
         {
             InitializeComponent();
             name = tableName;
+            actionName = action;
             this.label.Text = $"Column name: \n{tableName}";
             sqlConnection = connection;
             this.valueTB.Enabled = false;
         }
-
-        private async void insertBtn_Click(object sender, EventArgs e)
+        private void valueTB_KeyDown(object sender, KeyEventArgs e)
         {
-            this.deleteBtn.Enabled = false;
-            this.insertBtn.Enabled = false;
-            this.valueTB.Enabled = true;
-           
+            if (e.KeyCode == Keys.Enter)
+            {
+                if(this.valueTB.Text != string.Empty)
+                    tcs?.TrySetResult(true);
+                else
+                    MessageBox.Show("Enter value!");
+            } 
+        }
+
+        private void submitBtn_Click(object sender, EventArgs e)
+        {
+            switch (actionName)
+            {
+                case "Insert":
+                    Insert();
+                    break;
+                case "Delete":
+                    Delete();
+                    break;
+                default:
+                    break;
+            }
+        }
+        private async void Insert()
+        {
+            this.submitBtn.Enabled = false;
             using (SqlCommand command = new SqlCommand($@"SELECT * FROM [{name}]", sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -69,15 +91,11 @@ namespace WinFormsApp1
             {
                 MessageBox.Show("Error adding value!");
             }
-            this.insertBtn.Enabled = true;
-            this.valueTB.Enabled = false; 
-            this.deleteBtn.Enabled = true;
+            this.submitBtn.Enabled = true;
         }
-
-        private async void deleteBtn_Click(object sender, EventArgs e)
+        private async void Delete()
         {
-            this.insertBtn.Enabled = false;
-            this.deleteBtn.Enabled = false;
+            this.submitBtn.Enabled = false;
             this.valueTB.Enabled = true;
             string columnName = string.Empty;
             this.label.Text = "Enter id of element \nyou want to delete:";
@@ -100,20 +118,8 @@ namespace WinFormsApp1
                 }
                 this.valueTB.Text = string.Empty;
                 this.valueTB.Enabled = false;
-                this.deleteBtn.Enabled = true;
-                this.insertBtn.Enabled = true;
+                this.submitBtn.Enabled = true;
             }
-
-        }
-        private void valueTB_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                if(this.valueTB.Text != string.Empty)
-                    tcs?.TrySetResult(true);
-                else
-                    MessageBox.Show("Enter value!");
-            } 
         }
     }
 }

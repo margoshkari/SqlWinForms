@@ -30,7 +30,6 @@ namespace WinFormsApp1
         private void InitializeComponent()
         {
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.editBtn = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.SuspendLayout();
             // 
@@ -38,19 +37,9 @@ namespace WinFormsApp1
             // 
             this.treeView1.Location = new System.Drawing.Point(12, 27);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(229, 411);
+            this.treeView1.Size = new System.Drawing.Size(317, 411);
             this.treeView1.TabIndex = 3;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            // 
-            // editBtn
-            // 
-            this.editBtn.Location = new System.Drawing.Point(247, 227);
-            this.editBtn.Name = "editBtn";
-            this.editBtn.Size = new System.Drawing.Size(75, 23);
-            this.editBtn.TabIndex = 1;
-            this.editBtn.Text = "Edit table";
-            this.editBtn.UseVisualStyleBackColor = true;
-            this.editBtn.Click += new System.EventHandler(this.editBtn_Click);
             // 
             // menuStrip1
             // 
@@ -66,7 +55,6 @@ namespace WinFormsApp1
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(341, 450);
             this.Controls.Add(this.treeView1);
-            this.Controls.Add(this.editBtn);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MainMenuStrip = this.menuStrip1;
@@ -80,7 +68,6 @@ namespace WinFormsApp1
 
         #endregion
         private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.Button editBtn;
         private System.Windows.Forms.MenuStrip menuStrip1;
     }
 }
