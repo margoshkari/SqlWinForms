@@ -14,11 +14,11 @@ namespace WinFormsApp1
         {
             InitializeComponent();
         }
-        public TableDataForm(string tableName, string text)
+        public TableDataForm(string tablename, string data)
         {
             InitializeComponent();
-            this.label1.Text = tableName;
-            this.textBox1.Text = text;
+            this.label1.Text = tablename;
+            this.textBox1.Text = data;
         }
     }
 }

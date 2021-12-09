@@ -143,22 +143,45 @@ namespace WinFormsApp1
             procItem.DropDownItems.Add("Delete");
             procItem.DropDownItems[2].Click += Delete_Click;
 
+            ToolStripMenuItem tableItem = new ToolStripMenuItem("Table");
+            tableItem.DropDownItems.Add("Create Table");
+            tableItem.DropDownItems[0].Click += Create_Click;
+            tableItem.DropDownItems.Add("Drop Table");
+            tableItem.DropDownItems[1].Click += Drop_Click;
+
 
             this.menuStrip1.Items.Add(procItem);
-            this.menuStrip1.Items.Add("Table");
-            this.menuStrip1.Items.Add("Query");
+            this.menuStrip1.Items.Add(tableItem);
+        }
+        private void Drop_Click(object sender, EventArgs e)
+        {
+            Proc("Delete Table");
+        }
+        private void Create_Click(object sender, EventArgs e)
+        {
+            Table("Create Table");
         }
 
         private void Delete_Click(object sender, EventArgs e)
         {
-            Edit("Delete");
+            Proc("Delete");
         }
 
         private void Insert_Click(object sender, EventArgs e)
         {
-            Edit("Insert");
+            Proc("Insert");
         }
-        private void Edit(string action)
+        private void Table(string action)
+        {
+            if (isDatabaseExists(dbName))
+            {
+                this.Hide();
+                EditForm editForm = new EditForm(action, tableName, sqlConnection);
+                editForm.ShowDialog();
+                this.Show();
+            }
+        }
+        private void Proc(string action)
         {
             if (tableName != string.Empty)
             {

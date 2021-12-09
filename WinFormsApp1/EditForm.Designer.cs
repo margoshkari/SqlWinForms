@@ -29,31 +29,14 @@ namespace WinFormsApp1
         /// </summary>
         private void InitializeComponent()
         {
-            this.label = new System.Windows.Forms.Label();
-            this.valueTB = new System.Windows.Forms.TextBox();
             this.submitBtn = new System.Windows.Forms.Button();
+            this.textBox = new System.Windows.Forms.TextBox();
+            this.label = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // label
-            // 
-            this.label.AutoSize = true;
-            this.label.Location = new System.Drawing.Point(88, 28);
-            this.label.Name = "label";
-            this.label.Size = new System.Drawing.Size(50, 15);
-            this.label.TabIndex = 3;
-            this.label.Text = "Column";
-            // 
-            // valueTB
-            // 
-            this.valueTB.Location = new System.Drawing.Point(88, 70);
-            this.valueTB.Name = "valueTB";
-            this.valueTB.Size = new System.Drawing.Size(100, 23);
-            this.valueTB.TabIndex = 4;
-            this.valueTB.KeyDown += new System.Windows.Forms.KeyEventHandler(this.valueTB_KeyDown);
             // 
             // submitBtn
             // 
-            this.submitBtn.Location = new System.Drawing.Point(103, 99);
+            this.submitBtn.Location = new System.Drawing.Point(102, 336);
             this.submitBtn.Name = "submitBtn";
             this.submitBtn.Size = new System.Drawing.Size(75, 23);
             this.submitBtn.TabIndex = 5;
@@ -61,13 +44,31 @@ namespace WinFormsApp1
             this.submitBtn.UseVisualStyleBackColor = true;
             this.submitBtn.Click += new System.EventHandler(this.submitBtn_Click);
             // 
+            // textBox
+            // 
+            this.textBox.Location = new System.Drawing.Point(12, 35);
+            this.textBox.Multiline = true;
+            this.textBox.Name = "textBox";
+            this.textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox.Size = new System.Drawing.Size(258, 295);
+            this.textBox.TabIndex = 6;
+            // 
+            // label
+            // 
+            this.label.AutoSize = true;
+            this.label.Location = new System.Drawing.Point(12, 9);
+            this.label.Name = "label";
+            this.label.Size = new System.Drawing.Size(50, 15);
+            this.label.TabIndex = 3;
+            this.label.Text = "Column";
+            // 
             // EditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 170);
+            this.ClientSize = new System.Drawing.Size(282, 361);
+            this.Controls.Add(this.textBox);
             this.Controls.Add(this.submitBtn);
-            this.Controls.Add(this.valueTB);
             this.Controls.Add(this.label);
             this.Name = "EditForm";
             this.Text = "EditForm";
@@ -77,9 +78,9 @@ namespace WinFormsApp1
         }
 
         #endregion
-        private System.Windows.Forms.Label label;
-        private System.Windows.Forms.TextBox valueTB;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button submitBtn;
+        private System.Windows.Forms.TextBox textBox;
+        private System.Windows.Forms.Label label;
     }
 }

@@ -28,16 +28,25 @@ namespace WinFormsApp1
             InitializeComponent();
             name = tableName;
             actionName = action;
-            this.label.Text = $"Column name: \n{tableName}";
+            this.label.Text = $"{tableName}";
             sqlConnection = connection;
             Start();
         }
-        private void valueTB_KeyDown(object sender, KeyEventArgs e)
+        private void submitBtn_Click(object sender, EventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-                Check();
+            try
+            {
+                using (SqlCommand command = new SqlCommand(this.textBox.Text, sqlConnection))
+                {
+                    command.ExecuteNonQuery();
+                    MessageBox.Show("Succes!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
-        private void submitBtn_Click(object sender, EventArgs e) => Check();
         private void Start()
         {
             switch (actionName)
@@ -48,74 +57,50 @@ namespace WinFormsApp1
                 case "Delete":
                     Delete();
                     break;
+                case "Create Table":
+                    CreateTable();
+                    break;
+                case "Delete Table":
+                    DeleteTable();
+                    break;
                 default:
                     break;
             }
         }
-        private void Check()
+        private void Insert()
         {
-            if (this.valueTB.Text != string.Empty)
-                tcs?.TrySetResult(true);
-            else
-                MessageBox.Show("Enter value!");
-        }
-        private async void Insert()
-        {
-            using (SqlCommand command = new SqlCommand($@"SELECT * FROM [{name}]", sqlConnection))
+            try
             {
-                using (SqlDataReader reader = command.ExecuteReader())
+                this.textBox.Text = $@"INSERT INTO [{name}](";
+                using (SqlCommand command = new SqlCommand($@"SELECT * FROM [{name}]", sqlConnection)) 
                 {
-                    for (int i = 1; i < reader.FieldCount; i++)
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        this.label.Text = $"Enter: \n{reader.GetName(i)}";
-                        tcs = new TaskCompletionSource<bool>();
-                        if (await tcs.Task == true)
+                        for (int i = 1; i < reader.FieldCount; i++)
                         {
-                            value += $"{this.valueTB.Text},";
-                            this.valueTB.Text = string.Empty;
+                            this.textBox.Text += $"{reader.GetName(i)},";
                         }
                     }
                 }
-            }
-            value = value.Remove(value.Length - 1, 1);
-            try
-            {
-                using (SqlCommand command = new SqlCommand($@"INSERT INTO [{name}] VALUES ({value});", sqlConnection))
-                {
-                    if (command.ExecuteNonQuery() > 0)
-                        MessageBox.Show("Added!");
-                    else
-                        MessageBox.Show("Not added!");
-                }
+                this.textBox.Text = this.textBox.Text.Remove(this.textBox.Text.Length - 1, 1);
+                this.textBox.Text += ") VALUES(value)";
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error adding value!");
             }
         }
-        private async void Delete()
+        private void Delete()
         {
-            string columnName = string.Empty;
-            this.label.Text = "Enter id of element \nyou want to delete:";
-
-            using (SqlCommand sqlCommand = new SqlCommand($@"SELECT * FROM [{name}]", sqlConnection))
-            {
-                using (SqlDataReader reader = sqlCommand.ExecuteReader())
-                {
-                    columnName = reader.GetName(0);
-                }
-            }
-            if (await tcs.Task == true)
-            {
-                using (SqlCommand sqlCommand = new SqlCommand($"DELETE FROM [{name}] WHERE {columnName}={this.valueTB.Text};", sqlConnection))
-                {
-                    if (sqlCommand.ExecuteNonQuery() > 0)
-                        MessageBox.Show("Deleted!");
-                    else
-                        MessageBox.Show("Not found!");
-                }
-                this.valueTB.Text = string.Empty;
-            }
+            this.textBox.Text = $"DELETE FROM [{name}] WHERE [COLUMN_NAME]=VALUE;";
+        }
+        private void CreateTable()
+        {
+            this.textBox.Text = "CREATE TABLE [NAME]\r\n(\r\n[id] INT IDENTITY PRIMARY KEY,\r\n);";
+        }
+        private void DeleteTable()
+        {
+            this.textBox.Text = $"DROP TABLE [{this.name}];";
         }
     }
 }
