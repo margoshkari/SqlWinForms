@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,7 +8,6 @@ namespace WinFormsApp1
     public partial class EditForm : Form
     {
         TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-        string value = string.Empty;
         string name = string.Empty;
         string actionName = string.Empty;
         SqlConnection sqlConnection = new SqlConnection();
@@ -69,26 +62,19 @@ namespace WinFormsApp1
         }
         private void Insert()
         {
-            try
+            this.textBox.Text = $@"INSERT INTO [{name}](";
+            using (SqlCommand command = new SqlCommand($@"SELECT * FROM [{name}]", sqlConnection))
             {
-                this.textBox.Text = $@"INSERT INTO [{name}](";
-                using (SqlCommand command = new SqlCommand($@"SELECT * FROM [{name}]", sqlConnection)) 
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    for (int i = 1; i < reader.FieldCount; i++)
                     {
-                        for (int i = 1; i < reader.FieldCount; i++)
-                        {
-                            this.textBox.Text += $"{reader.GetName(i)},";
-                        }
+                        this.textBox.Text += $"{reader.GetName(i)},";
                     }
                 }
-                this.textBox.Text = this.textBox.Text.Remove(this.textBox.Text.Length - 1, 1);
-                this.textBox.Text += ") VALUES(value)";
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error adding value!");
-            }
+            this.textBox.Text = this.textBox.Text.Remove(this.textBox.Text.Length - 1, 1);
+            this.textBox.Text += ") VALUES(value);";
         }
         private void Delete()
         {

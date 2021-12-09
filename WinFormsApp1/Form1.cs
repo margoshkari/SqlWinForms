@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WinFormsApp1
@@ -120,7 +121,11 @@ namespace WinFormsApp1
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.treeView1.Nodes.Clear();
+            Task.Factory.StartNew(() => LoadData());
+        }
+        private void LoadData()
+        {
+            this.treeView1.Invoke((MethodInvoker)(() => this.treeView1.Nodes.Clear()));
             using (SqlCommand command = new SqlCommand(@"SELECT name FROM sys.databases;", sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -128,7 +133,7 @@ namespace WinFormsApp1
                     while (reader.Read())
                     {
                         object name = reader.GetValue(0);
-                        this.treeView1.Nodes.Add(name.ToString());
+                        this.treeView1.Invoke((MethodInvoker)(() => this.treeView1.Nodes.Add(name.ToString())));
                     }
                 }
             }
@@ -140,7 +145,7 @@ namespace WinFormsApp1
             procItem.DropDownItems[0].Click += Select_Click;
             procItem.DropDownItems.Add("Insert");
             procItem.DropDownItems[1].Click += Insert_Click;
-            procItem.DropDownItems.Add("Delete");
+            procItem.DropDownItems.Add("Delete data");
             procItem.DropDownItems[2].Click += Delete_Click;
 
             ToolStripMenuItem tableItem = new ToolStripMenuItem("Table");
@@ -153,24 +158,10 @@ namespace WinFormsApp1
             this.menuStrip1.Items.Add(procItem);
             this.menuStrip1.Items.Add(tableItem);
         }
-        private void Drop_Click(object sender, EventArgs e)
-        {
-            Proc("Delete Table");
-        }
-        private void Create_Click(object sender, EventArgs e)
-        {
-            Table("Create Table");
-        }
-
-        private void Delete_Click(object sender, EventArgs e)
-        {
-            Proc("Delete");
-        }
-
-        private void Insert_Click(object sender, EventArgs e)
-        {
-            Proc("Insert");
-        }
+        private void Drop_Click(object sender, EventArgs e) => Proc("Delete Table");
+        private void Create_Click(object sender, EventArgs e) => Table("Create Table");
+        private void Delete_Click(object sender, EventArgs e) => Proc("Delete");
+        private void Insert_Click(object sender, EventArgs e) => Proc("Insert");
         private void Table(string action)
         {
             if (isDatabaseExists(dbName))
@@ -178,8 +169,11 @@ namespace WinFormsApp1
                 this.Hide();
                 EditForm editForm = new EditForm(action, tableName, sqlConnection);
                 editForm.ShowDialog();
+                Task.Factory.StartNew(() => LoadData());
                 this.Show();
             }
+            else
+                MessageBox.Show("Select table or database!");
         }
         private void Proc(string action)
         {
@@ -190,8 +184,11 @@ namespace WinFormsApp1
                     this.Hide();
                     EditForm editForm = new EditForm(action, tableName, sqlConnection);
                     editForm.ShowDialog();
+                    Task.Factory.StartNew(() => LoadData());
                     this.Show();
                 }
+                else
+                    MessageBox.Show("Select table!");
             }
             else
                 MessageBox.Show("Select table!");
